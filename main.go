@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"strings"
+
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"strings"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func parsePathName(path string) string {
 	paths := strings.Split(path, ".")
 
 	var newPaths []string
-	
+
 	for _, p := range paths[1:] {
 		newPaths = append(newPaths, strings.Title(p))
 	}
@@ -32,20 +33,23 @@ func parsePathName(path string) string {
 }
 
 func generateMethod(msg *descriptorpb.MethodDescriptorProto) string {
+	var outpT = parsePathName(*msg.OutputType)
 	return fmt.Sprintf(`
-		public Task<string> SendMsg%s(%s msg) {
-			return EasyClient.BuildAndBroadcast(
+		public Task<Cosmcs.Client.ClientResponse<%s>> SendMsg%s(%s msg) {
+			return Client.BuildAndBroadcast(
 				new Any
 				{
 					Value = msg.ToByteString(),
 					TypeUrl = "/%s"
 				}
-			);
+			).ContinueWith(r => new Cosmcs.Client.ClientResponse<%s>(r.Result, %s.Parser));
 		}
 `,
+		outpT,
 		*msg.Name,
 		parsePathName(*msg.InputType),
 		strings.Trim(*msg.InputType, "."),
+		outpT, outpT,
 	)
 }
 
@@ -56,10 +60,10 @@ func generateService(service *descriptorpb.ServiceDescriptorProto) string {
 	}
 	return fmt.Sprintf(`
 	public class %sClient {
-		public EasyClient EasyClient { get; }
+		public IClient Client { get; }
 
-		public %sClient (EasyClient client) {
-			EasyClient = client;
+		public %sClient (IClient client) {
+			Client = client;
 		}
 %s
 	}`, *service.Name, *service.Name, inner)
@@ -73,7 +77,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) {
 		g.Skip()
 		return
 	}
-	
+
 	var inner = ""
 	for _, service := range file.Proto.Service {
 		inner += generateService(service)
