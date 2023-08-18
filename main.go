@@ -42,7 +42,16 @@ func generateMethod(msg *descriptorpb.MethodDescriptorProto) string {
 					Value = msg.ToByteString(),
 					TypeUrl = "/%s"
 				}
-			).ContinueWith(r => new Cosmcs.Client.ClientResponse<%s>(r.Result, %s.Parser));
+			).ContinueWith(r =>
+			{
+				System.Threading.Thread.Sleep(10000);
+				return r.Result;
+			})
+			.ContinueWith(r => Client.QueryTx(r.Result.TxResponse.Txhash))
+			.ContinueWith(r => new Cosmcs.Client.ClientResponse<%s>(
+				r.Result.Result.TxResponse,
+				%s.Parser
+			));
 		}
 `,
 		outpT,
