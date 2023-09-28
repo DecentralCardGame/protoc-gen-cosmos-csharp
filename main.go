@@ -36,20 +36,24 @@ func generateMethod(msg *descriptorpb.MethodDescriptorProto) string {
 	var outpT = parsePathName(*msg.OutputType)
 	return fmt.Sprintf(`
 		public Task<Cosmcs.Client.ClientResponse<%s>> SendMsg%s(%s msg) {
-			return Client.BuildAndBroadcast(
+			return Client.BuildAndBroadcast(new Any[] {
 				new Any
 				{
 					Value = msg.ToByteString(),
 					TypeUrl = "/%s"
-				}
+				}}
 			).ContinueWith(r =>
 			{
+				var res = r.Result;
+				if (res.TxResponse.Code != 0)
+				{
+					return res.TxResponse;
+				}
 				System.Threading.Thread.Sleep(10000);
-				return r.Result;
+				return Client.QueryTx(res.TxResponse.Txhash).Result.TxResponse;
 			})
-			.ContinueWith(r => Client.QueryTx(r.Result.TxResponse.Txhash))
 			.ContinueWith(r => new Cosmcs.Client.ClientResponse<%s>(
-				r.Result.Result.TxResponse,
+				r.Result,
 				%s.Parser
 			));
 		}
