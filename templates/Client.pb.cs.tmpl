@@ -24,7 +24,7 @@ namespace {{ .NameSpace }} {
 				new Any
 				{
 					Value = msg.ToByteString(),
-					TypeUrl = "{{ .TypeUrl }}"
+					TypeUrl = "/{{ .TypeUrl }}"
 				}},
 				fee
 			).ContinueWith(r =>
