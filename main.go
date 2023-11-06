@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	_ "embed"
+	"log"
 	"strings"
 	"text/template"
 
@@ -58,13 +59,14 @@ func generateService(service *descriptorpb.ServiceDescriptorProto) model.Client 
 	return client
 }
 
-// generateFile generates a _ascii.pb.go file containing gRPC service definitions.
 func generateFile(gen *protogen.Plugin, file *protogen.File) {
 	m := model.Model{
 		NameSpace: parsePathName("."+*file.Proto.Package),
 	}
-	filename := strings.Title(file.GeneratedFilenamePrefix) + "Client.pb.cs"
-	g := gen.NewGeneratedFile(filename, file.GoImportPath)
+	path := strings.Replace(m.NameSpace, ".", "/", -1)
+	log.Println(path)
+	filename := path + "/TxClient.pb.cs"
+	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(path))
 	if !strings.Contains(file.GeneratedFilenamePrefix, "tx") {
 		g.Skip()
 		return
