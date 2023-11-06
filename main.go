@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	_ "embed"
-	"log"
 	"strings"
 	"text/template"
 
@@ -61,10 +60,9 @@ func generateService(service *descriptorpb.ServiceDescriptorProto) model.Client 
 
 func generateFile(gen *protogen.Plugin, file *protogen.File) {
 	m := model.Model{
-		NameSpace: parsePathName("."+*file.Proto.Package),
+		NameSpace: parsePathName("." + *file.Proto.Package),
 	}
 	path := strings.Replace(m.NameSpace, ".", "/", -1)
-	log.Println(path)
 	filename := path + "/TxClient.pb.cs"
 	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(path))
 	if !strings.Contains(file.GeneratedFilenamePrefix, "tx") {
