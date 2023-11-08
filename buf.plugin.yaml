@@ -1,0 +1,3 @@
+version: v1
+name: buf.build/decentral-cardgame/cosmos-csharp
+plugin_version: v0.1.0
