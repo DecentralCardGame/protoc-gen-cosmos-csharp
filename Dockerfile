@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 FROM golang:1.19-bullseye AS builder
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go install -ldflags "-s -w" -trimpath github.com/DecentralCardGame/protoc-gen-cosmosCsharp@v0.1.0
+    go install -ldflags "-s -w" -trimpath github.com/DecentralCardgame/protoc-gen-cosmosCsharp@v0.1.0
 
 # When building a Docker image on a host that does not match linux/amd64 (such as an M1),
 # go install will put the binary in $GOPATH/bin/$GOOS_$GOARCH/. The mv command copies
