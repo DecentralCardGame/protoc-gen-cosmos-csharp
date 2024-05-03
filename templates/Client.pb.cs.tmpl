@@ -4,6 +4,7 @@
 // </auto-generated>
 #nullable enable
 
+using System;
 using Cosmcs.Client;
 using Cosmcs.Tx;
 using System.Threading.Tasks;
@@ -41,6 +42,22 @@ namespace {{ .NameSpace }} {
 				r.Result,
 				{{ .OutputType }}.Parser
 			));
+		}
+
+		public Task<Cosmos.Tx.V1beta1.SimulateResponse> SimulateMsg{{ .Name }}({{ .InputType }} msg) {
+			return Client.BuildAndSimulate(new Any[] {
+				new Any
+				{
+					Value = msg.ToByteString(),
+					TypeUrl = "/{{ .TypeUrl }}"
+				}}
+			);
+		}
+
+		public Task<Cosmcs.Client.ClientResponse<{{ .OutputType }}>> SimulateAndSendMsg{{ .Name }}({{ .InputType }} msg) {
+			return SimulateMsg{{ .Name }}(msg).ContinueWith(r => {
+				return SendMsg{{ .Name }}(msg, new Fee((ulong) Math.Ceiling(r.Result.GasInfo.GasUsed * 1.5))).Result;
+			});
 		}
         {{ end }}
 	}
