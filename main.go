@@ -8,7 +8,6 @@ import (
 
 	"github.com/DecentralCardgame/protoc-gen-cosmosCsharp/model"
 	"google.golang.org/protobuf/compiler/protogen"
-	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 //go:embed templates/Client.pb.cs.tmpl
@@ -20,76 +19,38 @@ func main() {
 			if !f.Generate {
 				continue
 			}
-			generateFile(gen, f)
+			if err := generateFile(gen, f); err != nil {
+				panic(err)
+			}
 		}
 		return nil
 	})
 }
 
-func parsePathName(path string) string {
-	paths := strings.Split(path, ".")
-
-	var newPaths []string
-
-	for _, p := range paths[1:] {
-		newPaths = append(newPaths, strings.Title(p))
+func generateFile(gen *protogen.Plugin, file *protogen.File) error {
+	m := model.NewModel(file)
+	if m == nil {
+		return nil
 	}
 
-	return strings.Join(newPaths, ".")
-}
-
-func generateMethod(msg *descriptorpb.MethodDescriptorProto) model.SendMethod {
-	return model.SendMethod{
-		OutputType: parsePathName(*msg.OutputType),
-		InputType:  parsePathName(*msg.InputType),
-		Name:       *msg.Name,
-		TypeUrl:    strings.Trim(*msg.InputType, "."),
-	}
-}
-
-func generateService(service *descriptorpb.ServiceDescriptorProto) model.Client {
-	client := model.Client{
-		Name: *service.Name,
-	}
-
-	for _, msg := range service.Method {
-		client.SendMethods = append(client.SendMethods, generateMethod(msg))
-	}
-	return client
-}
-
-func generateFile(gen *protogen.Plugin, file *protogen.File) {
-	m := model.Model{
-		NameSpace: parsePathName("." + *file.Proto.Package),
-	}
 	path := strings.Replace(m.NameSpace, ".", "/", -1)
 	filename := path + "/TxClient.pb.cs"
 	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(path))
 	if !strings.Contains(file.GeneratedFilenamePrefix, "tx") {
-		g.Skip()
-		return
-	}
-
-	for _, service := range file.Proto.Service {
-		m.Clients = append(m.Clients, generateService(service))
-	}
-
-	if len(m.Clients) == 0 {
-		g.Skip()
-		return
+		return nil
 	}
 
 	tmpl, err := template.New("client").Parse(clientTmpl)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	buf := bytes.NewBufferString("")
-
-	err = tmpl.Execute(buf, m)
-	if err != nil {
-		panic(err)
+	var buf bytes.Buffer
+	if err = tmpl.Execute(&buf, m); err != nil {
+		return err
 	}
 
 	g.P(buf.String())
+
+	return nil
 }
