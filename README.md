@@ -1,6 +1,11 @@
 # protoc-gen-cosmos-csharp
 A protoc plugin for generating CosmCs compatible tx routes from protobuf.
 
+## Installation
+```shell
+go install github.com/DecentralCardGame/protoc-gen-cosmos-csharp@latest
+```
+
 ## Example usage
 bug.gen.yaml
 ```yaml
