@@ -1,4 +1,4 @@
-# protoc-gen-cosmosCsharp
+# protoc-gen-cosmos-csharp
 A protoc plugin for generating CosmCs compatible tx routes from protobuf.
 
 ## Example usage
@@ -6,10 +6,18 @@ bug.gen.yaml
 ```yaml
 version: v1
 managed:
-enabled: true
+        enabled: true
+        go_package_prefix:
+                default: github.com/yourModule
 plugins:
-- plugin: cosmosCsharp
-out: out
+        - plugin: cosmos-csharp
+            out: out
+        - plugin: buf.build/protocolbuffers/csharp
+            out: out
+            opt: file_extension=.pb.cs,base_namespace=
+        - plugin: buf.build/grpc/csharp
+            out: out
+            opt: no_server,file_suffix=Grpc.pb.cs,base_namespace=
 ```
 
 ## License and Development

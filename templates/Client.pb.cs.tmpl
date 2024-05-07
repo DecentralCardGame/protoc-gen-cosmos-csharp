@@ -16,12 +16,12 @@ namespace {{ .NameSpace }} {
 	public class {{ .Name }}Client {
 		public IClient Client { get; }
 
-		[global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmosCsharp", null)]
+		[global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmos-csharp", null)]
 		public {{ .Name }}Client (IClient client) {
 			Client = client;
 		}
         {{ range .SendMethods }}
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmosCsharp", null)]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmos-csharp", null)]
         public Task<Cosmcs.Client.ClientResponse<{{ .OutputType }}>> SendMsg{{ .Name }}({{ .InputType }} msg, Cosmcs.Tx.Fee? fee = null) {
 			return Client.BuildAndBroadcast(new Any[] {
 				new Any
@@ -46,7 +46,7 @@ namespace {{ .NameSpace }} {
 			));
 		}
 
-		[global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmosCsharp", null)]
+		[global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmos-csharp", null)]
 		public Task<Cosmos.Tx.V1beta1.SimulateResponse> SimulateMsg{{ .Name }}({{ .InputType }} msg) {
 			return Client.BuildAndSimulate(new Any[] {
 				new Any
@@ -57,7 +57,7 @@ namespace {{ .NameSpace }} {
 			);
 		}
 
-		[global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmosCsharp", null)]
+		[global::System.CodeDom.Compiler.GeneratedCode("protoc-gen-cosmos-csharp", null)]
 		public Task<Cosmcs.Client.ClientResponse<{{ .OutputType }}>> SimulateAndSendMsg{{ .Name }}({{ .InputType }} msg) {
 			return SimulateMsg{{ .Name }}(msg).ContinueWith(r => {
 				return SendMsg{{ .Name }}(msg, new Cosmcs.Tx.Fee((ulong) Math.Ceiling(r.Result.GasInfo.GasUsed * 1.5))).Result;

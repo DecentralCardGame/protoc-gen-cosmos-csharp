@@ -1,4 +1,4 @@
-module github.com/DecentralCardgame/protoc-gen-cosmosCsharp
+module github.com/DecentralCardgame/protoc-gen-cosmos-csharp
 
 go 1.20
 

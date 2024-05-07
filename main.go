@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/DecentralCardgame/protoc-gen-cosmosCsharp/model"
+	"github.com/DecentralCardgame/protoc-gen-cosmos-csharp/model"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
