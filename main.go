@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	_ "embed"
+	"log"
+	"os"
 	"strings"
 	"text/template"
 
@@ -14,13 +16,15 @@ import (
 var clientTmpl string
 
 func main() {
+	log.SetOutput(os.Stderr)
+
 	protogen.Options{}.Run(func(gen *protogen.Plugin) error {
 		for _, f := range gen.Files {
 			if !f.Generate {
 				continue
 			}
 			if err := generateFile(gen, f); err != nil {
-				panic(err)
+				return err
 			}
 		}
 		return nil
@@ -37,6 +41,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) error {
 	filename := path + "/TxClient.pb.cs"
 	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(path))
 	if !strings.Contains(file.GeneratedFilenamePrefix, "tx") {
+		g.Skip()
 		return nil
 	}
 
