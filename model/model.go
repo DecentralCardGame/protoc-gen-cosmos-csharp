@@ -9,6 +9,7 @@ import (
 type Model struct {
 	NameSpace string
 	Clients   []Client
+	Source    string
 }
 
 type Client struct {
@@ -57,6 +58,7 @@ func NewMethod(msg *descriptorpb.MethodDescriptorProto) SendMethod {
 func NewModel(file *protogen.File) *Model {
 	m := Model{
 		NameSpace: parsePathName("." + *file.Proto.Package),
+		Source:    *file.Proto.Name,
 	}
 
 	if len(file.Proto.Service) == 0 {
