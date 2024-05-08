@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	_ "embed"
+	"flag"
 	"log"
 	"os"
 	"strings"
@@ -15,10 +16,13 @@ import (
 //go:embed templates/Client.pb.cs.tmpl
 var clientTmpl string
 
+var suffixFlag string
+
 func main() {
 	log.SetOutput(os.Stderr)
+	flag.StringVar(&suffixFlag, "suffix", "Client.pb.cs", "file suffixFlag")
 
-	protogen.Options{}.Run(func(gen *protogen.Plugin) error {
+	protogen.Options{ParamFunc: flag.Set}.Run(func(gen *protogen.Plugin) error {
 		for _, f := range gen.Files {
 			if !f.Generate {
 				continue
@@ -38,7 +42,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) error {
 	}
 
 	path := strings.Replace(m.NameSpace, ".", "/", -1)
-	filename := path + "/TxClient.pb.cs"
+	filename := path + "/Tx" + suffixFlag
 	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(path))
 	if !strings.Contains(file.GeneratedFilenamePrefix, "tx") {
 		g.Skip()
