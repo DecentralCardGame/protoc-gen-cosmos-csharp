@@ -1,13 +1,14 @@
 package model
 
 import (
+	"github.com/DecentralCardGame/protoc-gen-cosmos-csharp/descriptor"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"strings"
 )
 
 type Model struct {
-	NameSpace string
+	NameSpace descriptor.Desriptor
 	Clients   []Client
 	Source    string
 }
@@ -18,46 +19,37 @@ type Client struct {
 }
 
 type SendMethod struct {
-	OutputType string
-	InputType  string
+	OutputType descriptor.Desriptor
+	InputType  descriptor.Desriptor
 	Name       string
 	TypeUrl    string
 }
 
-func parsePathName(path string) string {
-	paths := strings.Split(path, ".")
-
-	var newPaths []string
-	for _, p := range paths[1:] {
-		newPaths = append(newPaths, strings.Title(p))
-	}
-
-	return strings.Join(newPaths, ".")
-}
-
-func NewService(service *descriptorpb.ServiceDescriptorProto) Client {
+func NewService(service *descriptorpb.ServiceDescriptorProto, nameSpace descriptor.Desriptor) Client {
 	client := Client{
 		Name: *service.Name,
 	}
 
 	for _, msg := range service.Method {
-		client.SendMethods = append(client.SendMethods, NewMethod(msg))
+		client.SendMethods = append(client.SendMethods, NewMethod(msg, nameSpace))
 	}
 	return client
 }
 
-func NewMethod(msg *descriptorpb.MethodDescriptorProto) SendMethod {
+func NewMethod(msg *descriptorpb.MethodDescriptorProto, nameSpace descriptor.Desriptor) SendMethod {
 	return SendMethod{
-		OutputType: parsePathName(*msg.OutputType),
-		InputType:  parsePathName(*msg.InputType),
+		OutputType: descriptor.FromTypeUrl(*msg.OutputType).CutNameSpace(nameSpace),
+		InputType:  descriptor.FromTypeUrl(*msg.InputType).CutNameSpace(nameSpace),
 		Name:       *msg.Name,
 		TypeUrl:    strings.Trim(*msg.InputType, "."),
 	}
 }
 
 func NewModel(file *protogen.File) *Model {
+	nameSpace := descriptor.FromTypeUrl("." + *file.Proto.Package)
+
 	m := Model{
-		NameSpace: parsePathName("." + *file.Proto.Package),
+		NameSpace: nameSpace,
 		Source:    *file.Proto.Name,
 	}
 
@@ -66,7 +58,7 @@ func NewModel(file *protogen.File) *Model {
 	}
 
 	for _, service := range file.Proto.Service {
-		m.Clients = append(m.Clients, NewService(service))
+		m.Clients = append(m.Clients, NewService(service, nameSpace))
 	}
 
 	return &m

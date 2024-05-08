@@ -41,7 +41,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) error {
 		return nil
 	}
 
-	path := strings.Replace(m.NameSpace, ".", "/", -1)
+	path := strings.Replace(m.NameSpace.String(), ".", "/", -1)
 	filename := path + "/Tx" + suffixFlag
 	g := gen.NewGeneratedFile(filename, protogen.GoImportPath(path))
 	if !strings.Contains(file.GeneratedFilenamePrefix, "tx") {
