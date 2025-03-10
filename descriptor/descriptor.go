@@ -9,11 +9,11 @@ import (
 )
 
 type Desriptor struct {
-	Elems []string
+	elems []string
 }
 
 func (d Desriptor) String() string {
-	return strings.Join(d.Elems, ".")
+	return strings.Join(d.elems, ".")
 }
 
 func FromTypeUrl(typeUrl string) Desriptor {
@@ -25,15 +25,15 @@ func FromTypeUrl(typeUrl string) Desriptor {
 	}
 
 	return Desriptor{
-		Elems: newElems,
+		elems: newElems,
 	}
 }
 
 func (d Desriptor) CutNameSpace(nameSpace Desriptor) Desriptor {
-	nsLen := len(nameSpace.Elems)
-	if nsLen < len(d.Elems) {
-		if slices.Equal(nameSpace.Elems, d.Elems[:nsLen]) {
-			d.Elems = d.Elems[nsLen:]
+	nsLen := len(nameSpace.elems)
+	if nsLen < len(d.elems) {
+		if slices.Equal(nameSpace.elems, d.elems[:nsLen]) {
+			d.elems = d.elems[nsLen:]
 		}
 	}
 
