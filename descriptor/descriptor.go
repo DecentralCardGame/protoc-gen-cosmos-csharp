@@ -3,6 +3,9 @@ package descriptor
 import (
 	"slices"
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type Desriptor struct {
@@ -18,7 +21,7 @@ func FromTypeUrl(typeUrl string) Desriptor {
 
 	var newElems []string
 	for _, p := range elems[1:] {
-		newElems = append(newElems, strings.Title(p))
+		newElems = append(newElems, cases.Title(language.English, cases.NoLower).String(p))
 	}
 
 	return Desriptor{
