@@ -27,3 +27,17 @@ func TestDescriptorCutsNothingWithNoMath(t *testing.T) {
 
 	assert.Equal(t, d, want)
 }
+
+func TestJoinJoins(t *testing.T) {
+	d1 := descriptor.FromTypeUrl(".abc.def")
+	d2 := descriptor.FromTypeUrl(".ghi.abc")
+	d3 := d1.Join(d2)
+
+	assert.Equal(t, d3.String(), "Abc.Def.Ghi.Abc")
+}
+
+func TestNameGivesName(t *testing.T) {
+	d := descriptor.FromTypeUrl(".abc.def")
+
+	assert.Equal(t, d.Name(), "Def")
+}

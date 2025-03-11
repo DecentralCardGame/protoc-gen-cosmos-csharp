@@ -1,14 +1,15 @@
 package model
 
 import (
+	"strings"
+
 	"github.com/DecentralCardGame/protoc-gen-cosmos-csharp/descriptor"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"strings"
 )
 
 type Model struct {
-	NameSpace descriptor.Desriptor
+	NameSpace descriptor.Descriptor
 	Clients   []Client
 	Source    string
 }
@@ -19,13 +20,13 @@ type Client struct {
 }
 
 type SendMethod struct {
-	OutputType descriptor.Desriptor
-	InputType  descriptor.Desriptor
+	OutputType descriptor.Descriptor
+	InputType  descriptor.Descriptor
 	Name       string
 	TypeUrl    string
 }
 
-func NewService(service *descriptorpb.ServiceDescriptorProto, nameSpace descriptor.Desriptor) Client {
+func NewService(service *descriptorpb.ServiceDescriptorProto, nameSpace descriptor.Descriptor) Client {
 	client := Client{
 		Name: *service.Name,
 	}
@@ -36,7 +37,7 @@ func NewService(service *descriptorpb.ServiceDescriptorProto, nameSpace descript
 	return client
 }
 
-func NewMethod(msg *descriptorpb.MethodDescriptorProto, nameSpace descriptor.Desriptor) SendMethod {
+func NewMethod(msg *descriptorpb.MethodDescriptorProto, nameSpace descriptor.Descriptor) SendMethod {
 	return SendMethod{
 		OutputType: descriptor.FromTypeUrl(*msg.OutputType).CutNameSpace(nameSpace),
 		InputType:  descriptor.FromTypeUrl(*msg.InputType).CutNameSpace(nameSpace),
