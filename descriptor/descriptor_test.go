@@ -14,6 +14,13 @@ func TestDescriptorCasesAreCorrect(t *testing.T) {
 	assert.Equal(t, d, want)
 }
 
+func TestFromTypeUrlWorksWithoutTrailingDot(t *testing.T) {
+	d := descriptor.FromTypeUrl("Abc.def.oneNiceType").String()
+	want := "Abc.Def.OneNiceType"
+
+	assert.Equal(t, d, want)
+}
+
 func TestDescriptorCutsMatch(t *testing.T) {
 	d := descriptor.FromTypeUrl(".abc.def.oneNiceType").CutNameSpace(descriptor.FromTypeUrl(".abc.def")).String()
 	want := "OneNiceType"

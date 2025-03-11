@@ -47,7 +47,7 @@ func NewMethod(msg *descriptorpb.MethodDescriptorProto, nameSpace descriptor.Des
 }
 
 func NewModel(file *protogen.File) *Model {
-	nameSpace := descriptor.FromTypeUrl("." + *file.Proto.Package)
+	nameSpace := descriptor.FromTypeUrl(*file.Proto.Package)
 
 	m := Model{
 		NameSpace: nameSpace,

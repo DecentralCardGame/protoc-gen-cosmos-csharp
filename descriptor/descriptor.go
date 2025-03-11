@@ -38,8 +38,12 @@ func (d Descriptor) CutNameSpace(nameSpace Descriptor) Descriptor {
 func FromTypeUrl(typeUrl string) Descriptor {
 	elems := strings.Split(typeUrl, ".")
 
+	if elems[0] == "" {
+		elems = elems[1:]
+	}
+
 	var newElems []string
-	for _, p := range elems[1:] {
+	for _, p := range elems {
 		newElems = append(newElems, cases.Title(language.Und, cases.NoLower).String(p))
 	}
 
