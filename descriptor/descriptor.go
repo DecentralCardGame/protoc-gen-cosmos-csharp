@@ -21,7 +21,7 @@ func FromTypeUrl(typeUrl string) Desriptor {
 
 	var newElems []string
 	for _, p := range elems[1:] {
-		newElems = append(newElems, cases.Title(language.English, cases.NoLower).String(p))
+		newElems = append(newElems, cases.Title(language.Und, cases.NoLower).String(p))
 	}
 
 	return Desriptor{
