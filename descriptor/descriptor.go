@@ -35,6 +35,10 @@ func (d Descriptor) CutNameSpace(nameSpace Descriptor) Descriptor {
 	return d
 }
 
+func (d Descriptor) Parent() Descriptor {
+	return Descriptor{elems: d.elems[:len(d.elems)-1]}
+}
+
 func FromTypeUrl(typeUrl string) Descriptor {
 	elems := strings.Split(typeUrl, ".")
 

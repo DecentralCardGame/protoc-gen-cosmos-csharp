@@ -48,3 +48,10 @@ func TestNameGivesName(t *testing.T) {
 
 	assert.Equal(t, d.Name(), "Def")
 }
+
+func TestParentGivesCorrectParent(t *testing.T) {
+	d := descriptor.FromTypeUrl("abc.ghi.def")
+	have := d.Parent().String()
+
+	assert.Equal(t, have, "Abc.Ghi")
+}
