@@ -17,10 +17,12 @@ import (
 var clientTmpl string
 
 var suffixFlag string
+var baseNamespaceFlag string
 
 func main() {
 	log.SetOutput(os.Stderr)
 	flag.StringVar(&suffixFlag, "suffix", "Client.pb.cs", "file suffixFlag")
+	flag.StringVar(&baseNamespaceFlag, "base_namespace", "", "base namespace")
 
 	protogen.Options{ParamFunc: flag.Set}.Run(func(gen *protogen.Plugin) error {
 		for _, f := range gen.Files {
@@ -36,7 +38,7 @@ func main() {
 }
 
 func generateFile(gen *protogen.Plugin, file *protogen.File) error {
-	m := model.NewModel(file)
+	m := model.NewModel(file, *&baseNamespaceFlag)
 	if m == nil {
 		return nil
 	}
